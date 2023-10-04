@@ -40,6 +40,7 @@ public class Node {
         .addService(new examples.grpcclient.JokeImpl())
             .addService(new examples.grpcclient.ZooImpl())
             .addService(new CoffeePotImpl())
+            .addService(new GeometryImpl())
         .addService(new example.grpcclient.RegistryAnswerImpl(services)).build().start();
 
     for (var service : server.getServices()) {

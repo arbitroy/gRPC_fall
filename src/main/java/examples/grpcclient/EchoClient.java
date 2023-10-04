@@ -18,6 +18,8 @@ public class EchoClient {
   private final JokeGrpc.JokeBlockingStub blockingStub2;
   private final ZooGrpc.ZooBlockingStub blockingStub5;
   private final CoffeePotGrpc.CoffeePotBlockingStub blockingStub6;
+
+  private final GeometryCalculatorGrpc.GeometryCalculatorBlockingStub blockingStub7;
   private final RegistryGrpc.RegistryBlockingStub blockingStub3;
   private final RegistryGrpc.RegistryBlockingStub blockingStub4;
 
@@ -35,6 +37,7 @@ public class EchoClient {
     blockingStub4 = RegistryGrpc.newBlockingStub(channel);
     blockingStub5 = ZooGrpc.newBlockingStub(channel);
     blockingStub6 = CoffeePotGrpc.newBlockingStub(channel);
+    blockingStub7 = GeometryCalculatorGrpc.newBlockingStub(channel);
   }
 
   public void askServerToParrot(String message) {
@@ -66,7 +69,51 @@ public class EchoClient {
     System.out.println("Message: " + response.getMessage());
 
   }
+  public void square(double sideLength) {
+    // Create a request for calculating the square area
+    SquareRequest request = SquareRequest.newBuilder()
+            .setSideLength(sideLength)
+            .build();
 
+    // Send the request to the server
+    SquareResponse response;
+    try {
+      response = blockingStub7.calculateSquareArea(request);
+    } catch (Exception e) {
+      System.err.println("RPC failed: " + e);
+      return;
+    }
+
+    // Handle the response
+    if (response != null) {
+      System.out.println("Area of square with side length " + sideLength + ": " + response.getArea());
+    } else {
+      System.err.println("Failed to calculate square area.");
+    }
+  }
+
+  public void circle(double radius) {
+    // Create a request for calculating the circle area
+    CircleRequest request = CircleRequest.newBuilder()
+            .setRadius(radius)
+            .build();
+
+    // Send the request to the server
+    CircleResponse response;
+    try {
+      response = blockingStub7.calculateCircleArea(request);
+    } catch (Exception e) {
+      System.err.println("RPC failed: " + e);
+      return;
+    }
+
+    // Handle the response
+    if (response != null) {
+      System.out.println("Area of circle with radius " + radius + ": " + response.getArea());
+    } else {
+      System.err.println("Failed to calculate circle area.");
+    }
+  }
   //coffee brewing
   public void brewCoffee(){
     // Create a request with an empty message (since getCup doesn't require any input)
@@ -263,7 +310,7 @@ public class EchoClient {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
       // Prompt the user to choose between joke service and zoo service
-      System.out.println("Select a service:\n1. Joke Service\n2. Zoo Service\n3. Coffepot service");
+      System.out.println("Select a service:\n1. Joke Service\n2. Zoo Service\n3. Coffepot service\n4. Geometry Service");
       int serviceChoice = Integer.parseInt(reader.readLine());
 
       if (serviceChoice == 1) {
@@ -273,7 +320,7 @@ public class EchoClient {
         client.askForJokes(numJokes);
       } else if (serviceChoice == 2) {
         // Zoo Service
-        System.out.println("Select an animal:\n1. Lion\n2. Elephant\n");
+        System.out.println("Select an animal:\n1. Lion\n2. Elephant");
         int animalChoice = Integer.parseInt(reader.readLine());
 
         if (animalChoice == 1) {
@@ -284,7 +331,7 @@ public class EchoClient {
           client.getSound("lion");
         }
       } else if (serviceChoice == 3) {
-        System.out.println("Do you want:\n1.Check CoffeePot Status\n2.Brew Some Coffee\n");
+        System.out.println("Do you want:\n1.Check CoffeePot Status\n2.Brew Some Coffee");
         Integer coffeChoice = Integer.parseInt(reader.readLine());
 
         if(coffeChoice == 1){
@@ -296,7 +343,23 @@ public class EchoClient {
         }else {
           System.out.println("Invalid choice.");
         }
-      } else {
+      }else if (serviceChoice == 4) {
+        System.out.println("Which area do you wish to calculate:\n1.Square\n2.Circle");
+        Integer geoChoice = Integer.parseInt(reader.readLine());
+
+        if(geoChoice == 1){
+          System.out.println("Enter the length:");
+          Double length = Double.valueOf(reader.readLine());
+          client.square(length);
+        } else if (geoChoice == 2) {
+          System.out.println("Enter the radius:");
+          Double radius = Double.valueOf(reader.readLine());
+          client.circle(radius);
+        }else {
+          System.out.println("Invalid choice.");
+        }
+      }
+      else {
         System.out.println("Invalid choice.");
       }
 
@@ -326,6 +389,11 @@ public class EchoClient {
 
         //coffee
         client.findServer("services.CoffePot/getCup");
+
+        //geomtry
+        client.findServer("services.GeometryCalculator/calculateSquareArea");
+        //geomtry
+        client.findServer("services.GeometryCalculator/calculateCircleArea");
 
         // does not exist
         client.findServer("random"); // shows the output if the server does not find a given service

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "service";
+option java_outer_classname = "GeometryCalculatorProto";
+
+package services;
+
+service GeometryCalculator {
+  // Calculate the area of a square
+  rpc calculateSquareArea(SquareRequest) returns (SquareResponse);
+
+  // Calculate the area of a circle
+  rpc calculateCircleArea(CircleRequest) returns (CircleResponse);
+}
+
+message SquareRequest {
+  // Side length of the square
+  double side_length = 1;
+}
+
+message SquareResponse {
+  // Area of the square
+  double area = 1;
+}
+
+message CircleRequest {
+  // Radius of the circle
+  double radius = 1;
+}
+
+message CircleResponse {
+  // Area of the circle
+  double area = 1;
+}
+
+// Server-side storage for persistent data
+message GeometryData {
+  repeated SquareRequest square_requests = 1;
+  repeated CircleRequest circle_requests = 2;
+}
