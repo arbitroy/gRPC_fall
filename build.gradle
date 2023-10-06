@@ -159,6 +159,21 @@ task runClient(type: JavaExec) {
   args regOn
 }
 
+// runs a client which will run some commands on a node and also on the registration node
+task runClient2(type: JavaExec) {
+    dependsOn arguments
+    classpath = sourceSets.main.runtimeClasspath
+    description = "Run Client"
+    main = 'examples.grpcclient.Client'
+    standardInput = System.in
+    // default args
+    args serviceHost
+    args servicePort
+    args registryHost
+    args grpcPort
+    args message
+    args regOn
+}
 // runs a service node which already has the echo and joke service included
 task runNode(type: JavaExec) {
   dependsOn arguments
